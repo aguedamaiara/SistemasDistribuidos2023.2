@@ -1,14 +1,11 @@
 //package org.example;
 
 import java.io.*;
-import java.lang.management.RuntimeMXBean;
+import java.lang.management.*;
 import java.net.*;
 import java.util.*;
 
 //lib da ram
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
-import java.lang.management.MemoryUsage;
 
 //lib do hdd
 import java.io.File;
@@ -17,9 +14,12 @@ import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.util.List;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 
 public class EchoServer {
-    public static void main(String[] args ) {
+    public static void main(String[] args) {
         try {
             ServerSocket s = new ServerSocket(8189);
             //Socket incoming = s.accept();
@@ -122,24 +122,21 @@ public class EchoServer {
         return hddInfo.toString();
     }
 
-    // Função para obter informações dos programas em execução
+
+
     public static String ConsultarProgramasEmExecucao() {
-            // Obter a instância da RuntimeMXBean
-            RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
+        ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+        ThreadInfo[] threadInfos = threadMXBean.getThreadInfo(threadMXBean.getAllThreadIds(), 0);
 
-            // Obter a lista de argumentos da linha de comando
-            List<String> argumentosLinhaDeComando = runtimeMXBean.getInputArguments();
-
-            // Exibir informações sobre os programas em execução
-            System.out.println("Programas em Execução:");
-
-            for (String argumento : argumentosLinhaDeComando) {
-                System.out.println(argumento);
-            }
-        return "Informações dos programas em execução";
+        StringBuilder result = new StringBuilder("Programas em execução:\n");
+        for (ThreadInfo threadInfo : threadInfos) {
+            result.append("ID: ").append(threadInfo.getThreadId()).append("\n");
+            result.append("Nome: ").append(threadInfo.getThreadName()).append("\n");
+            result.append("Estado: ").append(threadInfo.getThreadState()).append("\n");
+            result.append("=============================\n");
         }
 
+        return result.toString();
+    }
 }
-
-
 
